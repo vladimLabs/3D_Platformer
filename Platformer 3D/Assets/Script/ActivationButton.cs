@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ActivationButton : MonoBehaviour
 {
-    [SerializeField] private GameObject target;
+    [SerializeField] private Animator target;
     [SerializeField] private bool enable;
     [SerializeField] private AudioClip sound;
 
@@ -10,7 +10,7 @@ public class ActivationButton : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            target.SetActive(enable);
+            target.SetTrigger("Open");
             AudioManager.Instance.PlayLevelSfx(sound);
         }
     }
