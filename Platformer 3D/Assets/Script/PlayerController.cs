@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IReplayObject
 {
     [Header("Move")]
     [SerializeField] private float maxSpeed = 6f;
@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     [Header("Sounds")]
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip landSound;
-
+    [SerializeField] private ReplayManager replayManager;
     private Rigidbody _rb;
     private bool _isGrounded;
     private bool IsGrounded
@@ -37,9 +37,11 @@ public class PlayerController : MonoBehaviour
 
     private bool _isPaused;
 
-    private void Awake()
+    private void Start()
     {
         _rb = GetComponent<Rigidbody>();
+        
+        replayManager.Register(this);
     }
 
     private void Update()
@@ -143,72 +145,18 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    public SnapshotInfo SaveSnapshot()
+    {
+        PlayerSnapshotInfo info = new PlayerSnapshotInfo()
+        {
+            velocity = _rb.linearVelocity,
+            angularVelocity = _rb.angularVelocity,
+        };
+        return info;
+    }
 
-
-
-
-    //[SerializeField] private float speed;
-    //[SerializeField] private float jumpForce;
-    //[SerializeField] private float rotationSpeed;
-    //[SerializeField] private Transform groundCheck;
-    //[SerializeField] private float groundCheckRedius;
-    //[SerializeField] private LayerMask groundLayer;
-    //private Rigidbody _rb;
-    //private bool _isGrounded;
-
-    //private void Awake()
-    //{
-    //    _rb = GetComponent<Rigidbody>();
-    //}
-
-    //private void Update()
-    //{
-    //    Move();
-    //    CheckGround();
-    //    Jump();
-    //}
-
-    //private void Move()
-    //{
-    //    float inputX = Input.GetAxis("Horizontal");
-    //    float inputY = Input.GetAxis("Vertical");
-
-    //    Vector3 movement = new Vector3 (inputX, 0, inputY);
-
-    //    #region Rotation
-
-    //    if(movement.magnitude > 0)
-    //    {
-    //        Quaternion target = Quaternion.LookRotation(movement);
-    //        float t = 1 - Mathf.Exp(-rotationSpeed * Time.deltaTime);
-    //        transform.rotation = Quaternion.Slerp(transform.rotation, target, t);
-    //    }
-
-    //    #endregion
-
-    //    Vector3 direction = _rb.position + movement * speed * Time.deltaTime; //TODO move to FixedUpdate()
-    //    _rb.MovePosition(direction);
-    //}
-
-    //private void Jump()
-    //{
-    //    if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-    //    }
-    //}
-
-    //private void CheckGround()
-    //{
-    //    var colliders = Physics.OverlapSphere(groundCheck.position, groundCheckRedius, groundLayer);
-
-    //    _isGrounded = (colliders.Length > 0);
-
-    //}
-
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.burlywood;
-    //    Gizmos.DrawSphere(groundCheck.position, groundCheckRedius);
-    //}
+    public void LoadSnapshot(SnapshotInfo data)
+    {
+        throw new System.NotImplementedException();
+    }
 }
